@@ -18,9 +18,11 @@ export default function Home() {
   const handleSendMessage = (message: string) => {
     console.log(message)
   }
+
   const handleJoinRoom = () => {
     setJoined(true)
   }
+  
   return (
     <div className="flex mt-24 justify-center w-full">
       <div>
