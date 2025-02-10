@@ -2,7 +2,8 @@
 
 import ChatForm from "@/components/ChatForm";
 import ChatMessage from "@/components/ChatMessage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { socket } from "@/lib/socketClient";
 
 export default function Home() {
   type message = {
@@ -15,14 +16,32 @@ export default function Home() {
   const [messages, setMessages] = useState<message[]>([]);
   const [userName, setUserName] = useState("");
 
+  useEffect (() => {
+    // sb joins
+    socket.on("user_joined", (message) => {
+      setMessages( (prev) => [...prev, { sender: "system", message }])
+    })
+
+    //sb leaves
+    return () => {
+      socket.off("user_joined");
+      socket.off("message");
+    }
+  });
+
+  const handleJoinRoom = () => {
+    if(room && userName) {
+      socket.emit("join-room", {room, username: userName});
+      console.log("username:", userName);
+      console.log("room:", room);
+      setJoined(true);
+    }
+  }
+
   const handleSendMessage = (message: string) => {
     console.log(message)
   }
 
-  const handleJoinRoom = () => {
-    setJoined(true)
-  }
-  
   return (
     <div className="flex mt-24 justify-center w-full">
       <div>
@@ -39,8 +58,8 @@ export default function Home() {
               />
               <input 
                 type="text"
-                placeholder="Enter room name"
-                value={userName}
+                placeholder="Enter room id"
+                value={room}
                 onChange={(e) => {setRoom(e.target.value)}}
                 className="w-64 px-4 py-2 border-2 rounded-lg"
               />
