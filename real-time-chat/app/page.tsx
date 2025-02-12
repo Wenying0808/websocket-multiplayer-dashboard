@@ -46,7 +46,7 @@ export default function Home() {
     const data = { room, message, sender: userName };
     setMessages((prev) => [...prev, { sender: userName, message}]);
     socket.emit("message", data);
-    console.log(message)
+    console.log(message);
   }
 
   return (
