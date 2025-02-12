@@ -17,9 +17,13 @@ export default function Home() {
   const [userName, setUserName] = useState("");
 
   useEffect (() => {
-    // sb joins
+    // sb joins and receive messages from system
     socket.on("user_joined", (message) => {
       setMessages( (prev) => [...prev, { sender: "system", message }])
+    })
+    // persist the messages
+    socket.on("message", (data) => {
+      setMessages((prev) => [...prev, data])
     })
 
     //sb leaves
@@ -39,6 +43,9 @@ export default function Home() {
   }
 
   const handleSendMessage = (message: string) => {
+    const data = { room, message, sender: userName };
+    setMessages((prev) => [...prev, { sender: userName, message}]);
+    socket.emit("message", data);
     console.log(message)
   }
 
